@@ -48,7 +48,7 @@ module.exports = async (req, res) => {
       apiReq.end();
     });
 
-    if (result.error) throw new Error(result.error.message);
+    if (result.error) throw new Error(JSON.stringify(result.error));
     const text = result?.candidates?.[0]?.content?.parts?.[0]?.text;
     if (!text) throw new Error('Empty response from Gemini');
 
