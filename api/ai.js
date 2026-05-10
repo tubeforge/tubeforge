@@ -24,18 +24,18 @@ module.exports = async (req, res) => {
       generationConfig: { maxOutputTokens: 1500, temperature: 0.9 }
     });
 
-    const result = await new Promise((resolve, reject) => {
-      const reqOptions = {
-        hostname: 'generativelanguage.googleapis.com',
-path: `/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`,
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Content-Length': Buffer.byteLength(data)
-        }
-      };
+    const options = {
+      hostname: 'generativelanguage.googleapis.com',
+      path: `/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(data)
+      }
+    };
 
-      const apiReq = https.request(reqOptions, (apiRes) => {
+    const result = await new Promise((resolve, reject) => {
+      const apiReq = https.request(options, (apiRes) => {
         let body = '';
         apiRes.on('data', chunk => body += chunk);
         apiRes.on('end', () => {
@@ -43,7 +43,6 @@ path: `/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`,
           catch (e) { reject(new Error('Invalid JSON response')); }
         });
       });
-
       apiReq.on('error', reject);
       apiReq.write(data);
       apiReq.end();
@@ -58,4 +57,3 @@ path: `/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`,
     return res.status(500).json({ error: e.message });
   }
 };
-
