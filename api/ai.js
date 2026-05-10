@@ -17,19 +17,22 @@ module.exports = async (req, res) => {
     const { prompt } = req.body;
     if (!prompt) return res.status(400).json({ error: 'No prompt provided' });
 
-    const GEMINI_KEY = 'AIzaSyAQnE_6PoaGX0r5N-IIhkfCcSPiXBMnCWw';
+    const OPENAI_KEY = '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';
 
     const data = JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { maxOutputTokens: 1500, temperature: 0.9 }
+      model: 'gpt-4o-mini',
+      messages: [{ role: 'user', content: prompt }],
+      max_tokens: 1500,
+      temperature: 0.9
     });
 
     const options = {
-      hostname: 'generativelanguage.googleapis.com',
-      path: `/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`,
+      hostname: 'api.openai.com',
+      path: '/v1/chat/completions',
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${OPENAI_KEY}`,
         'Content-Length': Buffer.byteLength(data)
       }
     };
@@ -48,9 +51,9 @@ module.exports = async (req, res) => {
       apiReq.end();
     });
 
-    if (result.error) throw new Error(JSON.stringify(result.error));
-    const text = result?.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!text) throw new Error('Empty response from Gemini');
+    if (result.error) throw new Error(result.error.message);
+    const text = result?.choices?.[0]?.message?.content;
+    if (!text) throw new Error('Empty response');
 
     return res.status(200).json({ text });
   } catch (e) {
