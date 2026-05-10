@@ -17,7 +17,7 @@ module.exports = async (req, res) => {
     const { prompt } = req.body;
     if (!prompt) return res.status(400).json({ error: 'No prompt provided' });
 
-    const GEMINI_KEY = process.env.GEMINI_API_KEY;
+    const GEMINI_KEY = 'AIzaSyBy571M7NtKmj2QYFXkMDkXGUAgO8JZyvg';
 
     const data = JSON.stringify({
       contents: [{ parts: [{ text: prompt }] }],
